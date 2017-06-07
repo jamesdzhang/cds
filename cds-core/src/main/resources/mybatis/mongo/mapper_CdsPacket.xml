@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tuniu.car.mapper.vo.CdsRequestVo" >
+
+    <resultMap id="BaseResultMap" type="com.tuniu.car.mapper.vo.CdsRequestVo">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="request_seq" property="reqSeq" jdbcType="VARCHAR" />
+        <result column="request_packet" property="reqPacket"/>
+        <result column="response_packet" property="respPacket"/>
+        <result column="request_packet_coc" property="reqPacketCoc"/>
+        <result column="response_packet_coc" property="respPacketCoc"/>
+        <result column="req_type" property="reqType" jdbcType="VARCHAR"  />
+        <result column="req_interval" property="reqInterval"  jdbcType="INTEGER"/>
+        <result column="is_normal" property="isNormal"  jdbcType="INTEGER"/>
+        <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="selectByParam"  parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT *
+        from cds_request
+        WHERE 1=1
+        <if test ="orderId != null">
+            AND order_id = #{orderId,jdbcType=VARCHAR}
+        </if>
+        <if test ="reqSeq != null">
+            AND request_seq = #{reqSeq,jdbcType=VARCHAR}
+        </if>
+        <if test ="reqType != null">
+            AND req_type = #{reqType,jdbcType=VARCHAR}
+        </if>
+        <if test ="isNormal != null">
+            AND is_normal = #{isNormal,jdbcType=INTEGER}
+        </if>
+        <if test ="startDate != null">
+            AND add_time >= #{startDate,jdbcType=VARCHAR}
+        </if>
+        <if test ="endDate != null">
+            AND add_time &lt; #{endDate,jdbcType=VARCHAR}
+        </if>
+        order by id ASC
+    </select>
+
+    <insert id="insertRecord" parameterType="com.tuniu.car.mapper.vo.CdsRequestVo" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO cds_request
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            order_id,
+            request_seq,
+            request_packet,
+            request_packet_coc,
+            req_type
+            <if test ="respPacket != null">
+                ,response_packet
+            </if>
+            <if test ="respPacketCoc != null">
+                ,response_packet_coc
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{orderId,jdbcType=VARCHAR},
+            #{reqSeq,jdbcType=VARCHAR},
+            #{reqPacket},
+            #{reqPacketCoc},
+            #{reqType,jdbcType=VARCHAR}
+            <if test ="respPacket != null">
+                ,#{respPacket}
+            </if>
+            <if test ="respPacketCoc != null">
+                ,#{respPacketCoc}
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateByParam" parameterType="com.tuniu.car.mapper.vo.CdsRequestVo" >
+        UPDATE cds_request
+        SET
+        response_packet = #{respPacket,jdbcType=VARCHAR}
+        ,response_packet_coc = #{respPacketCoc,jdbcType=VARCHAR}
+        <if test ="isNormal != null">
+            ,is_normal = #{isNormal,jdbcType=VARCHAR}
+        </if>
+        WHERE 1=1
+        AND order_id = #{orderId,jdbcType=VARCHAR}
+        AND req_type = #{reqType,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateInterval" parameterType="com.tuniu.car.mapper.vo.CdsRequestVo" >
+        UPDATE cds_request
+        SET
+        req_interval = #{reqInterval,jdbcType=INTEGER}
+        WHERE 1=1
+        AND req_interval is null
+        <if test ="orderId != null">
+            AND order_id >= #{orderId,jdbcType=VARCHAR}
+        </if>
+        <if test ="reqSeq != null">
+            AND request_seq >= #{reqSeq,jdbcType=VARCHAR}
+        </if>
+        <if test ="reqType != null">
+            AND req_type >= #{reqType,jdbcType=VARCHAR}
+        </if>
+    </update>
+
+    <delete id="deleteByParam" parameterType="java.util.Map" >
+        delete from cds_request
+        where 1=1
+        <if test ="archiveTime != null">
+            AND add_time &lt; #{archiveTime}
+        </if>
+        <if test="ids != null">
+            AND id IN
+            <foreach collection="ids" index="" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+    </delete>
+
+
+</mapper>

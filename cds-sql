@@ -1,0 +1,70 @@
+/**
+main table of cds
+*/
+CREATE TABLE `cds_order` (
+`id`  int(10) NOT NULL AUTO_INCREMENT ,
+`sub_order_id`  varchar(30) NOT NULL COMMENT 'order_id of distributing co.' ,
+`order_id`  varchar(30) NOT NULL COMMENT 'order_id of Tuniu' ,
+`status`  varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT 'status_unknown' COMMENT 'order_status in cds system' ,
+`request_source`  varchar(20) CHARACTER SET utf8 NOT NULL COMMENT 'distributor code in Tuniu system' ,
+`add_time`  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+`update_time`  timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP ,
+`del_flag`  tinyint(1) NOT NULL DEFAULT 0 COMMENT 'deleted or not. 1 - deleted, 0-not' ,
+PRIMARY KEY (`id`),
+UNIQUE INDEX `sub_order_id` (`sub_order_id`) USING HASH ,
+UNIQUE INDEX `order_id` (`order_id`) USING HASH ,
+INDEX `source` (`request_source`) USING BTREE 
+)
+;
+
+
+
+
+
+/**
+request invoking track table
+*/
+CREATE TABLE `cds_request` (
+`id`  int(10) NOT NULL AUTO_INCREMENT ,
+`order_id`  varchar(30) NOT NULL COMMENT 'order_id of Tuniu' ,
+`request_seq`  varchar(40) CHARACTER SET utf8 NOT NULL  COMMENT 'order_seq the sub_order use' ,
+`request_packet`  varchar(128) CHARACTER SET utf8 NOT NULL COMMENT 'request packet, holds value of mongo db object Id' ,
+`response_packet`  varchar(128) NULL  COMMENT 'response packet, holds value of mongo db object Id' ,
+`request_packet_coc`  varchar(128) CHARACTER SET utf8 NOT NULL COMMENT 'request packet, holds value of mongo db object Id' ,
+`response_packet_coc`  varchar(128) NULL  COMMENT 'response packet, holds value of mongo db object Id' ,
+`req_type`  varchar(20) NOT NULL COMMENT 'request type,currently support :[create_order,cancel_order,check_order_loss,query_order_status]' ,
+`req_interval`  int(11) NULL COMMENT 'the request time cost, format in long' ,
+`is_normal`  tinyint(1) NOT NULL DEFAULT -1 COMMENT 'is processed successfully -1 initial status 1 normally done 0 abnormally done' ,
+`add_time`  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+`update_time`  timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP ,
+`del_flag`  tinyint(1) NOT NULL DEFAULT 0 COMMENT 'deleted or not. 1 - deleted, 0-not' ,
+PRIMARY KEY (`id`),
+UNIQUE INDEX `order_id` (`order_id`) USING HASH 
+)
+;
+
+
+/**
+revert table
+*/
+CREATE TABLE `cds_revert` (
+`id`  int(10) NOT NULL AUTO_INCREMENT ,
+`order_id`  varchar(30) NOT NULL COMMENT 'order_id of Tuniu' ,
+`sub_order_id`  varchar(30) CHARACTER SET utf8 NOT NULL   COMMENT 'sub_order_id of distributor systems' ,
+`revert_packet`  varchar(128) CHARACTER SET utf8 NOT NULL COMMENT 'revert packet, holds value of mongo db object Id' ,
+`revert_response`  varchar(128) NULL   COMMENT 'response to revert packet, holds value of mongo db object Id' ,
+`revert_type`  varchar(20) NOT NULL COMMENT 'revert type,currently support :[confirm_result,driver_info]' ,
+`retry_times`  tinyint(1) NULL DEFAULT 0 COMMENT 'retry times, maximum 3 times, 0 not yet, -1 completed failure ' ,
+`is_success`  tinyint(1) NULL DEFAULT 0 COMMENT 'revert success,  1 completed success ' ,
+`add_time`  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+`update_time`  timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP ,
+`del_flag`  tinyint(1) NOT NULL DEFAULT 0 COMMENT 'deleted or not. 1 - deleted, 0-not' ,
+PRIMARY KEY (`id`),
+INDEX `order_id` (`order_id`) USING HASH ,
+INDEX `sub_order_id` (`sub_order_id`) USING HASH ,
+INDEX `revert_type` (`revert_type`) USING BTREE 
+)
+;
+
+
+

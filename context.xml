@@ -1,0 +1,28 @@
+<!-- dev -->
+<Resource acquireIncrement="2" auth="Container" description="DB Connection" driverClass="com.mysql.jdbc.Driver"
+              factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="56"
+              jdbcUrl="jdbc:mysql://cds-master.db.tuniu-dev.org:3308/cds?characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"
+              maxIdleTime="56" maxPoolSize="10" maxStatements="0" minPoolSize="2" name="cds.datasource.master" numHelperThreads="3"
+              password="tuniu520" preferredTestQuery="select 1" type="com.mchange.v2.c3p0.ComboPooledDataSource"
+              user="cds_dev"/>
+<Resource acquireIncrement="2" auth="Container" description="DB Connection" driverClass="com.mysql.jdbc.Driver"
+          factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="56"
+          jdbcUrl="jdbc:mysql://cds-slave.db.tuniu-dev.org:3308/cds?characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"
+          maxIdleTime="56" maxPoolSize="10" maxStatements="0" minPoolSize="2" name="cds.datasource.slave" numHelperThreads="3"
+          password="tuniu520" preferredTestQuery="select 1" type="com.mchange.v2.c3p0.ComboPooledDataSource"
+          user="cds_rw"/>
+
+
+<!-- test -->
+<Resource acquireIncrement="2" auth="Container" description="DB Connection" driverClass="com.mysql.jdbc.Driver"
+          factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="56"
+          jdbcUrl="jdbc:mysql://cds-master.db.tuniu-sit.org:3306/cds?characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"
+          maxIdleTime="56" maxPoolSize="10" maxStatements="0" minPoolSize="2" name="cds.datasource.master" numHelperThreads="3"
+          password="tuniu520" preferredTestQuery="select 1" type="com.mchange.v2.c3p0.ComboPooledDataSource"
+          user="cds_rw"/>
+<Resource acquireIncrement="2" auth="Container" description="DB Connection" driverClass="com.mysql.jdbc.Driver"
+          factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="56"
+          jdbcUrl="jdbc:mysql://cds-slave.db.tuniu-sit.org:3306/cds?characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"
+          maxIdleTime="56" maxPoolSize="10" maxStatements="0" minPoolSize="2" name="cds.datasource.slave" numHelperThreads="3"
+          password="tuniu520" preferredTestQuery="select 1" type="com.mchange.v2.c3p0.ComboPooledDataSource"
+          user="cds_rw"/>

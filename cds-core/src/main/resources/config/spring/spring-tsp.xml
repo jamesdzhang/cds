@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd 
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd 
+    http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx/spring-tx-3.1.xsd ">
+    <!-- http://tsp.test.tuniu.org/PLA/TSG/index.html TSP注册监控地址 -->
+    <!-- 参考Wiki：http://wiki.tuniu.org/pages/viewpage.action?pageId=38028773 -->
+    <!--用于获取Spring的ApplicationContex 不要修改-->
+    <bean class="com.tuniu.operation.platform.tsg.client.common.AppContext"></bean>
+
+    <!--监控中心配置 全局配置 一定要配置正确 -->
+    <bean id="monitor" class="com.tuniu.operation.platform.tsg.monitor.Monitor" destroy-method="stop">
+        <property name="brokerURL" value="failover://(${tsp.broker.address})?randomize=false&amp;jms.useAsyncSend=true"></property>
+        <!-- 这个队列名是固定的为queue.pla.tsp.monitor.log, 请不要修改为其他值 -->
+        <property name="queueName" value="${tsp.registry.queue}"></property>
+    </bean>
+
+    <!--注册中心配置 全局配置-->
+    <bean id="registerConfig" class="com.tuniu.operation.platform.tsg.client.config.RegisterConfig">
+        <property name="registryAddress" value="${tsp.registry.address}"></property>
+    </bean>
+
+    <!-- 提供者配置 应用自行修改 即使不提供服务也最好配置上，方便线上定位；-->
+    <!-- 如果不提供服务，可以把isScan设置为false；然后provideService的list不设置具体的服务信息 -->
+    <bean id="providerConfig" class="com.tuniu.operation.platform.tsg.client.config.ProviderConfig">
+        <property name="subSystem" value="${tsp.project.subName}"></property>
+        <!--这个对应于war的名字，会影响最终自动拼接的mapping，如果在最终的url上要影藏war名，则这里可以设置为""或者不设置-->
+        <property name="packageName" value="${tsp.project.contextPath}"></property>
+        <!--工程负责人的名字，拼音，后续会根据这个来发送告警邮件，请慎重填写-->
+        <property name="maintainer" value="${tsp.project.maintainer}"></property>
+        <!--是否自动扫描controller的注解来获取待注册的服务信息-->
+        <property name="isScan" value="true"></property>
+        <!--提供的服务列表-->
+       <!-- <property name="provideService">
+            <list>
+            </list>
+        </property>-->
+    </bean>
+
+    <!-- 消费者配置 应用自行修改 请务必配置，否则无法监听服务地址变更，后果很严重 -->
+    <!-- 特别提醒： 服务名不能重复；服务名不要带空格或者换行  -->
+    <bean id="consumerConfig" class="com.tuniu.operation.platform.tsg.client.config.ConsumerConfig" lazy-init="false">
+        <property name="refferenceService">
+            <list>
+                <value>CAR.CDS.CarOrderApiController.createOrder</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--TSP客户端配置 应用自行修改-->
+    <bean id="tspCommonClient" class="com.tuniu.operation.platform.tsg.client.proxy.tsg.TSPCommonClient" destroy-method="stop">
+        <property name="consumerConfig" ref="consumerConfig"/>
+        <property name="providerConfig" ref="providerConfig"></property>
+        <property name="registerConfig" ref="registerConfig"/>
+        <property name="connectTimeout" value="2"></property><!--连接超时时间配置 应用可选配置，不配置将默认为2秒-->
+        <property name="socketTimeout" value="2"></property> <!--Socket连接超时时间配置 应用可选配置，不配置将默认为2秒-->
+    </bean>
+
+
+</beans>

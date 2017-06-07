@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- 	<bean id="mbeanExporter" class="org.springframework.jmx.export.MBeanExporter" -->
+<!-- 		lazy-init="false"> -->
+<!-- 		<property name="autodetectModeName" value="AUTODETECT_ALL"></property> -->
+<!-- 		<property name="assembler" ref="metadataMBeanInfoAssembler"></property> -->
+<!-- 		<property name="namingStrategy" ref="metadataNamingStrategy"></property> -->
+<!-- 	</bean> -->
+
+	<bean id="metadataMBeanInfoAssembler"
+		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="annotationJmsAttributeSource" />
+	</bean>
+
+	<bean id="metadataNamingStrategy"
+		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="annotationJmsAttributeSource" />
+	</bean>
+
+	<bean id="annotationJmsAttributeSource"
+		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+
+</beans>

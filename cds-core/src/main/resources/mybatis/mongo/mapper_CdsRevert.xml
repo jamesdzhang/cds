@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tuniu.car.mapper.vo.CdsRevertVo" >
+
+    <resultMap id="BaseResultMap" type="com.tuniu.car.mapper.vo.CdsRevertVo">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="sub_order_id" property="subOrderId" jdbcType="VARCHAR" />
+        <result column="revert_packet" property="reqPacket"/>
+        <result column="revert_response" property="respPacket"/>
+        <result column="revert_type" property="revertType" jdbcType="VARCHAR"/>
+        <result column="retry_times" property="retryTimes" jdbcType="INTEGER"  />
+        <result column="is_success" property="isSuccess" jdbcType="INTEGER" />
+        <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="selectByParam"  parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT *
+        from cds_revert
+        WHERE 1=1
+        <if test ="orderId != null">
+            AND order_id = #{orderId,jdbcType=VARCHAR}
+        </if>
+        <if test ="revertType != null">
+            AND revert_type = #{revertType,jdbcType=VARCHAR}
+        </if>
+        <if test ="startDate != null">
+            AND add_time >= #{startDate,jdbcType=VARCHAR}
+        </if>
+        <if test ="endDate != null">
+            AND add_time &lt; #{endDate,jdbcType=VARCHAR}
+        </if>
+        <if test ="available != null">
+            AND retry_times >= 0
+            AND is_success = 0
+        </if>
+        <if test ="failed != null">
+            AND retry_times = -1
+        </if>
+    </select>
+
+    <insert id="insertRecord" parameterType="com.tuniu.car.mapper.vo.CdsRevertVo" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO cds_revert
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            order_id,
+            sub_order_id,
+            revert_packet,
+            revert_type
+            <if test ="respPacket != null">
+                ,revert_response
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{orderId,jdbcType=VARCHAR},
+            #{subOrderId,jdbcType=VARCHAR},
+            #{reqPacket},
+            #{revertType,jdbcType=VARCHAR}
+            <if test ="respPacket != null">
+                ,#{respPacket}
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateResponse" parameterType="com.tuniu.car.mapper.vo.CdsRevertVo" >
+        UPDATE cds_revert
+        SET
+        retry_times = #{retryTimes,jdbcType=INTEGER}
+        <if test ="respPacket != null">
+            ,revert_response = #{respPacket,jdbcType=VARCHAR}
+        </if>
+        WHERE 1=1
+        AND order_id = #{orderId,jdbcType=VARCHAR}
+        AND revert_type = #{revertType,jdbcType=VARCHAR}
+    </update>
+
+
+</mapper>

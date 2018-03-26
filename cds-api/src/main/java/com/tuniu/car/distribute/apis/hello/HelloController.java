@@ -36,6 +36,7 @@ public class HelloController {
     @BeanValid
     public ResponseVo sayHi_(@Json HelloVo helloVo) throws Exception{
         ResponseVo vo = new ResponseVo();
+        ResponseVo vo1 = new ResponseVo();
 
         RequestParam requestParam1 = new RequestParam();
         requestParam1.setServiceName(ServiceA);
